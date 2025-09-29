@@ -94,6 +94,8 @@ const isLogin = ref(true)
 const loginMethod = ref('password')
 const isResetPassword = ref(false) // 新增：重置密码状态
 
+
+//----------------------------表单规则校验-------------------------------------
 const loginForm = ref({
   email: '',
   password: '',
@@ -114,6 +116,28 @@ const registerFormRef = ref()
 
 const register_rules = computed(() => RegisterRules(registerForm.value))
 const login_rules = computed(() => LoginRules(loginForm.value))
+
+//------------------------------发送请求-------------------------------------
+
+// 发送验证码
+const postEmailCode = async () => {
+  const ok = await beforePost()
+  if (!ok) return
+
+  const url = '/api/sendCode'
+  const payload =
+    isLogin.value ?
+      isResetPassword ?
+        { email: loginForm.value.email, method: 'forget' } :
+        { email: loginForm.value.email, method: 'login' } :
+      { email: registerForm.value.email, method: 'register' }
+
+  const data = await LoginRegister.post(url, payload)
+  if (data.code === 200) {
+    ElNotification({ type: 'success', message: data.msg })
+  } else
+    ElNotification({ type: 'error', message: data.msg })
+}
 
 // 登录
 const handleLogin = async () => {
@@ -186,6 +210,8 @@ const handleResetPassword = async () => {
 
 }
 
+//----------------------------函数----------------------------------
+
 //单独邮箱规则校验
 const beforePost = async () => {
   if (!isLogin.value && !registerForm.value.email.trim()
@@ -202,26 +228,6 @@ const beforePost = async () => {
     ElNotification({ type: 'error', message: '请输入正确的邮箱格式' })
     return 0
   }
-}
-
-// 发送验证码
-const postEmailCode = async () => {
-  const ok = await beforePost()
-  if (!ok) return
-
-  const url = '/api/sendCode'
-  const payload =
-    isLogin.value ?
-      isResetPassword ?
-        { email: loginForm.value.email, method: 'forget' } :
-        { email: loginForm.value.email, method: 'login' } :
-      { email: registerForm.value.email, method: 'register' }
-
-  const data = await LoginRegister.post(url, payload)
-  if (data.code === 200) {
-    ElNotification({ type: 'success', message: data.msg })
-  } else
-    ElNotification({ type: 'error', message: data.msg })
 }
 
 // 切换登录方式

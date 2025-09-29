@@ -14,7 +14,7 @@ let useLoginRegisterStore = defineStore('LoginRegister', {
   actions: {
     async post(url: string, payload: any) {
       const res = await axios.post(url, payload)
-      console.log('post_res', res);
+      // console.log('post_res', res);
       if (res.data.code === 200) {
         this.switchUrl(url, res.data)
       }

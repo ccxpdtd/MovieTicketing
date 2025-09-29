@@ -25,8 +25,17 @@ body {
   /* 防止水平滚动 */
 }
 
+body {
+  background-color: #171717;
+  /* 半透明黑色 */
+  color: #d5d5d5;
+  /* 白色文字 */
+  font-family: 'Arial', sans-serif;
+}
+
 #app {
   padding: 0;
   display: block;
+  margin: 0;
 }
 </style>
