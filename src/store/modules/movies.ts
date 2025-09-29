@@ -9,7 +9,7 @@ let useMoviesStore = defineStore('Movies', {
   actions: {
     async get(url: string) {
       const res = await axios.get(url)
-      console.log('movies_get', res);
+      // console.log('movies_get', res);
       if (res.data.code === 200) {
         this.switchUrl(url, res.data)
       }

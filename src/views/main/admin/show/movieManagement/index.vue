@@ -41,8 +41,12 @@
             </td>
             <td class="movie-actions">
               <button class="action-btn action-schedule">排片</button>
-              <button class="action-btn action-offline">下架</button>
-              <button class="action-btn action-edit">编辑</button>
+              <el-popconfirm title="确定下架该电影吗？" @confirm="offlineMovie(movie.id)">
+                <template #reference>
+                  <button class="action-btn action-offline">下架</button>
+                </template>
+              </el-popconfirm>
+              <button class="action-btn action-edit" @click="editMovie(index)">编辑</button>
             </td>
           </tr>
         </tbody>
@@ -65,12 +69,15 @@ import { onMounted, ref, watch } from 'vue';
 
 import useMoviesStore from '../../../../../store/modules/movies'
 import { ElNotification } from 'element-plus'
+
+import { useRouter } from 'vue-router'
+const $router = useRouter()
 const useMovies = useMoviesStore()
 
 const searchVal = ref('');
 
-const movieList = ref<any>([]);
-const filmovieList = ref<any>([]);
+const movieList = ref < any > ([]);
+const filmovieList = ref < any > ([]);
 // 分页数据（防止分页组件报错）
 const currentPage = ref(1);
 const totalPages = ref(Math.ceil(movieList.value.length / 10)); // 假设每页10条数据
@@ -96,19 +103,30 @@ const getMovies = async () => {
     ElNotification({ type: 'error', message: data.msg })
 }
 
+const editMovie = (index: number) => {
+  try {
+    $router.push({ path: "/admin/upload", query: { index } })
+  } catch (error) {
+    ElNotification({ type: 'error', message: '编辑失败' })
+  }
+}
+
+const offlineMovie = async (id: number) => {
+  const url = '/api/delete_movie'
+  const data = await useMovies.post(url, { id })
+  if (data.code === 200) {
+    getMovies()
+    ElNotification({ type: 'success', message: data.msg })
+  }
+  else
+    ElNotification({ type: 'error', message: data.msg })
+}
+
 // 空操作函数（防止按钮点击报错，实际业务逻辑对接后替换）
 const handleSchedule = (index: number) => {
   console.log(`进行排片操作`, index);
 };
-const handleOffline = (index: number) => {
-  console.log(`进行下架操作`, index);
-};
-const handleEdit = (index: number) => {
-  console.log(`进行编辑操作`, index);
-};
-const handleSearch = () => {
-  console.log('搜索电影关键词：', searchVal.value);
-};
+
 const handlePageChange = (type: 'prev' | 'next') => {
   if (type === 'prev' && currentPage.value > 1) currentPage.value--;
   if (type === 'next' && currentPage.value < totalPages.value) currentPage.value++;
@@ -118,7 +136,7 @@ const handlePageChange = (type: 'prev' | 'next') => {
 <style scoped>
 /* 容器整体样式 */
 .movie-manage-container {
-  width: 90%;
+  width: 95%;
   margin: 20px auto;
   color: #e0e0e0;
 }
@@ -177,8 +195,8 @@ const handlePageChange = (type: 'prev' | 'next') => {
 .movie-table {
   width: 100%;
   border-collapse: collapse;
-  text-align: left;
 }
+
 
 /* 表头样式 */
 .table-header {
@@ -187,7 +205,7 @@ const handlePageChange = (type: 'prev' | 'next') => {
 }
 
 th {
-  padding: 16px 20px;
+  padding: 16px 15px;
   font-size: 15px;
   font-weight: 400;
   color: #b0b0b0;
@@ -205,15 +223,30 @@ th {
 }
 
 td {
-  padding: 16px 20px;
+  padding: 16px 15px;
   font-size: 14px;
   color: #d0d0d0;
   border-bottom: 1px solid #3d3d3d;
 }
 
+.movie-name {
+  max-width: 200px;
+  /* 👉 控制列最大宽度 */
+  white-space: nowrap;
+  /* 不换行 */
+  overflow: hidden;
+  /* 超出隐藏 */
+  text-overflow: ellipsis;
+  /* 超出显示“...” */
+}
+
+.movie-desc {
+  width: 300px;
+}
+
 /* 表格内容特殊样式 */
 .movie-desc .desc-wrapper {
-  width: 300px;
+  width: 350px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -242,6 +275,7 @@ td {
 .movie-actions {
   display: flex;
   gap: 8px;
+
 }
 
 .action-btn {
@@ -318,7 +352,7 @@ td {
 /* 响应式调整 */
 @media (max-width: 1200px) {
   .movie-desc .desc-wrapper {
-    width: 200px;
+    width: 350px;
   }
 }
 

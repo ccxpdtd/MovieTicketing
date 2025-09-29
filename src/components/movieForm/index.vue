@@ -51,65 +51,31 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import useMoviesStore from '../../../../../store/modules/movies'
-const useMovies = useMoviesStore()
-import { useRoute } from 'vue-router'
-const $route = useRoute()
-import { useRouter } from 'vue-router'
-const $router = useRouter()
+import { ref } from 'vue'
+import useMoviesStore from '../../store/modules/movies'
 import { ElNotification } from 'element-plus';
+const useMovies = useMoviesStore()
 
+// const UploadformData = ref({
+//   name: '',
+//   duration: '',
+//   poster: '',
+//   description: '',
+//   release_date: ''
+// });
 
-const UploadformData = ref<any>({
-  name: '',
-  duration: '',
-  poster: '',
-  description: '',
-  release_date: ''
-});
-
-onMounted(() => {
-  setFormData()
-})
-const setFormData = async () => {
-  if ($route.query.index) {
-    const indexParam = $route.query.index
-    const parseIndex = Array.isArray(indexParam)
-      ? (indexParam[0] ? parseInt(indexParam[0]) : null)
-      : typeof indexParam === 'string'
-        ? parseInt(indexParam)
-        : null
-    if (parseIndex !== null && parseIndex >= 0) {
-      await getFormData()
-      UploadformData.value = useMovies.movies[parseIndex]
-    }
-  }
-}
-
-const getFormData = async () => {
-  const url = '/api/get_movies'
-  await useMovies.get(url)
-}
+let props = defineProps(['UploadformData'])
 
 const uploadMovie = async () => {
-  let url
-  $route.query.index ?
-    url = '/api/edit_movie' : url = '/api/upload_movie'
-  const payload = UploadformData.value
+  // console.log('表单数据:', UploadformData.value);
+  const url = '/api/upload_movies'
+  const payload = props.UploadformData
   const data = await useMovies.post(url, payload)
-  if (data.code === 200) {
-    goToMovieManagement()
+  if (data.code === 200)
     ElNotification({ type: 'success', message: data.msg })
-  }
   else
     ElNotification({ type: 'error', message: data.msg })
 };
-
-const goToMovieManagement = () => {
-  $router.push({ path: "/admin/movieManagement", })
-}
-
 </script>
 
 <style scoped>

@@ -5,10 +5,13 @@ import Home from "../views/main/home/index.vue"
 import Movie from "../views/main/movie/index.vue"
 import MyOrder from "../views/main/myorder/index.vue"
 import Settings from "../views/main/settings/index.vue"
+
 import Admin from "../views/main/admin/index.vue"
 import Upload from "../views/main/admin/show/upload/index.vue"
 import MovieManagement from "../views/main/admin/show/movieManagement/index.vue"
 import UserManagement from "../views/main/admin/show/userManagement/index.vue"
+import Schedule from "../views/main/admin/show/schedule/index.vue"
+import Hall from "../views/main/admin/show/hall/index.vue"
 
 
 export const myRoutes = [
@@ -75,6 +78,22 @@ export const myRoutes = [
             component: MovieManagement,
             meta: {
               title: '电影管理'
+            },
+          },
+          {
+            path: "hall",
+            name: 'myHall',
+            component: Hall,
+            meta: {
+              title: '影厅管理'
+            },
+          },
+          {
+            path: "schedule",
+            name: 'mySchedule',
+            component: Schedule,
+            meta: {
+              title: '排片记录'
             },
           },
           {
